@@ -1,0 +1,8 @@
+{
+  "useSmtp": true,
+  "host": "smtp-relay.gmail.com",
+  "port": 465,
+  "username": "laiasoprano.web@gmail.com",
+  "password": "hola1020",
+  "recipientEmail": "laiasoprano.web@gmail.com"
+}
