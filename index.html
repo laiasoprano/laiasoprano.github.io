@@ -243,7 +243,7 @@
             <div class="col-12">
               <h3 class="font-secondary text-gray-760 text-center text-md-left">Get in Touch</h3>
               <!--RD Mailform-->
-              <form class="rd-form rd-mailform" data-form-output="form-output-global" data-form-type="contact" action="https://formspree.io/f/mqalrnrr"
+              <form class="rd-form contact-form" data-form-output="form-output-global" data-form-type="contact" action="https://formspree.io/f/mqalrnrr"
               method="POST">
                 <div class="row row-narrow-20 row-20">
                   <div class="col-md-6">
@@ -313,5 +313,60 @@
     <div class="snackbars" id="form-output-global"></div>
     <script src="js/core.min.js"></script>
     <script src="js/script.js"></script>
+    <script>
+    // Custom Formspree handler to fix loading message issue
+    document.addEventListener('DOMContentLoaded', function() {
+        const contactForm = document.querySelector('.contact-form');
+        const output = document.getElementById('form-output-global');
+        
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Show loading message
+                output.innerHTML = '<p><span class="icon text-middle fa fa-circle-o-notch fa-spin icon-xxs"></span><span>Sending...</span></p>';
+                output.classList.add('active');
+                
+                // Submit form data
+                const formData = new FormData(contactForm);
+                
+                fetch(contactForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Success
+                        output.innerHTML = '<p><span class="icon text-middle mdi mdi-check icon-xxs"></span><span>Successfully sent!</span></p>';
+                        contactForm.reset();
+                        
+                        // Clear form validation states
+                        const inputs = contactForm.querySelectorAll('input, textarea');
+                        inputs.forEach(input => {
+                            input.dispatchEvent(new Event('blur'));
+                        });
+                    } else {
+                        // Error
+                        output.innerHTML = '<p class="snackbars-left"><span class="icon icon-xxs mdi mdi-alert-outline text-middle"></span><span>Something went wrong. Please try again.</span></p>';
+                    }
+                })
+                .catch(error => {
+                    // Network error
+                    output.innerHTML = '<p class="snackbars-left"><span class="icon icon-xxs mdi mdi-alert-outline text-middle"></span><span>Network error. Please check your connection.</span></p>';
+                })
+                .finally(() => {
+                    // Hide message after 3.5 seconds
+                    setTimeout(() => {
+                        output.classList.remove('active');
+                        output.innerHTML = '';
+                    }, 3500);
+                });
+            });
+        }
+    });
+    </script>
   </body>
 </html>
