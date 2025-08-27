@@ -344,10 +344,10 @@
                         contactForm.reset();
                         
                         // Clear form validation states
-                        const inputs = contactForm.querySelectorAll('input, textarea');
-                        inputs.forEach(input => {
-                            input.dispatchEvent(new Event('blur'));
-                        });
+                        //const inputs = contactForm.querySelectorAll('input, textarea');
+                        //inputs.forEach(input => {
+                        //    input.dispatchEvent(new Event('blur'));
+                        //});
                     } else {
                         // Error
                         output.innerHTML = '<p class="snackbars-left"><span class="icon icon-xxs mdi mdi-alert-outline text-middle"></span><span>Something went wrong. Please try again.</span></p>';
