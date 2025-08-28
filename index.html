@@ -272,7 +272,7 @@
                   </div>
                   <div class="col-md-4">
                     <div class="form-wrap">
-                      <input class="form-input" id="contact-zip" type="text" name="name" data-constraints="@Required">
+                      <input class="form-input" id="contact-zip" type="text" name="city">
                       <label class="form-label" for="contact-zip">Your City</label>
                     </div>
                   </div>
@@ -323,6 +323,71 @@
             contactForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
+                // Validate form before submission
+                const requiredFields = contactForm.querySelectorAll('[data-constraints*="Required"]');
+                let hasErrors = false;
+                
+                requiredFields.forEach(field => {
+                    const formWrap = field.closest('.form-wrap');
+                    const validation = formWrap.querySelector('.form-validation');
+                    
+                    if (!field.value.trim()) {
+                        formWrap.classList.add('has-error');
+                        if (validation) {
+                            validation.textContent = 'The text field is required.';
+                        }
+                        hasErrors = true;
+                    } else {
+                        formWrap.classList.remove('has-error');
+                        if (validation) {
+                            validation.textContent = '';
+                        }
+                    }
+                });
+                
+                // Check email field specifically
+                const emailField = contactForm.querySelector('[type="email"]');
+                if (emailField) {
+                    const emailFormWrap = emailField.closest('.form-wrap');
+                    const emailValidation = emailFormWrap.querySelector('.form-validation');
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    
+                    if (emailField.value.trim() && !emailRegex.test(emailField.value)) {
+                        emailFormWrap.classList.add('has-error');
+                        if (emailValidation) {
+                            emailValidation.textContent = 'The email is not a valid email.';
+                        }
+                        hasErrors = true;
+                    }
+                }
+                
+                // Check numeric field (phone)
+                const phoneField = contactForm.querySelector('[data-constraints*="Numeric"]');
+                if (phoneField && phoneField.value.trim()) {
+                    const phoneFormWrap = phoneField.closest('.form-wrap');
+                    const phoneValidation = phoneFormWrap.querySelector('.form-validation');
+                    const numericRegex = /^[0-9\-\(\) +]+$/;
+                    
+                    if (!numericRegex.test(phoneField.value)) {
+                        phoneFormWrap.classList.add('has-error');
+                        if (phoneValidation) {
+                            phoneValidation.textContent = 'Only numbers are required';
+                        }
+                        hasErrors = true;
+                    }
+                }
+                
+                // If there are validation errors, don't submit
+                if (hasErrors) {
+                    output.innerHTML = '<p class="snackbars-left"><span class="icon icon-xxs mdi mdi-alert-outline text-middle"></span><span>Please fix the errors above.</span></p>';
+                    output.classList.add('active');
+                    setTimeout(() => {
+                        output.classList.remove('active');
+                        output.innerHTML = '';
+                    }, 3500);
+                    return;
+                }
+                
                 // Show loading message
                 output.innerHTML = '<p><span class="icon text-middle fa fa-circle-o-notch fa-spin icon-xxs"></span><span>Sending...</span></p>';
                 output.classList.add('active');
@@ -344,10 +409,18 @@
                         contactForm.reset();
                         
                         // Clear form validation states
-                        //const inputs = contactForm.querySelectorAll('input, textarea');
-                        //inputs.forEach(input => {
-                        //    input.dispatchEvent(new Event('blur'));
-                        //});
+                        const inputs = contactForm.querySelectorAll('input, textarea');
+                        inputs.forEach(input => {
+                            // Remove validation classes and messages
+                            const formWrap = input.closest('.form-wrap');
+                            if (formWrap) {
+                                formWrap.classList.remove('has-error');
+                                const validation = formWrap.querySelector('.form-validation');
+                                if (validation) {
+                                    validation.textContent = '';
+                                }
+                            }
+                        });
                     } else {
                         // Error
                         output.innerHTML = '<p class="snackbars-left"><span class="icon icon-xxs mdi mdi-alert-outline text-middle"></span><span>Something went wrong. Please try again.</span></p>';
